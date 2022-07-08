@@ -7,6 +7,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 
 import HappyEmoji from '@assets/happy.png';
+import { useAuth } from '@hooks/auth';
 import { Search } from '@components/Search';
 import { ProductCard, ProductProps } from '@components/ProductCard';
 
@@ -28,6 +29,7 @@ export function Home() {
   const [pizzas, setPizzas] = useState<ProductProps[]>([]);
   const [search, setSearch] = useState('');
   const navigation = useNavigation();
+  const { user, signOut } = useAuth();
 
   function fetchPizza(value: string){
     const formattedValue = value.toLocaleLowerCase().trim();
@@ -60,7 +62,8 @@ export function Home() {
   }
 
   function handleOpen(id: string){
-    navigation.navigate('products', { id })
+    const route = user?.isAdmin ? 'products' : 'order';
+    navigation.navigate(route, { id })
   }
 
   function handleAdd(){
@@ -80,7 +83,7 @@ export function Home() {
           <GreetingText>Olá, Admin</GreetingText>
         </Greeting>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={signOut}>
           <MaterialIcons name="logout" color={COLORS.TITLE} size={24} />
         </TouchableOpacity>
 
@@ -111,11 +114,14 @@ export function Home() {
         }}
       />
 
-      <NewProductButton 
+      {
+        user?.isAdmin &&
+        <NewProductButton 
         title="Cadastrar Pizza"
         type="secondary"
         onPress={handleAdd}
-      />
+        />
+      }
     </Container>
   );
 }
