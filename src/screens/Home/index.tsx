@@ -25,10 +25,13 @@ import {
 
 
 export function Home() {
-  const { COLORS } = useTheme();
   const [pizzas, setPizzas] = useState<ProductProps[]>([]);
   const [search, setSearch] = useState('');
+
+  const { COLORS } = useTheme();
+
   const navigation = useNavigation();
+  
   const { user, signOut } = useAuth();
 
   function fetchPizza(value: string){
